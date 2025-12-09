@@ -9,18 +9,30 @@ const SITE_NAME = getSiteName();
 const domain = getDomain();
 const keywordId = getKeywordId();
 
-// Load keyword-specific variations
-const keywordModule = await loadKeywordVariations(keywordId);
-const { getH1Variation, getMetaVariations } = keywordModule;
+// Load keyword-specific variations with error handling
+let metaContent = { title: 'Eligibility Requirements', description: 'Check if you qualify' };
+let h1Text = { h1: 'Check Your Eligibility' };
 
-// Dynamic SEO Meta Tags using keyword variations
-const metaContent = getMetaVariations(SITE_NAME, domain, 'eligibility');
+try {
+  const keywordModule = await loadKeywordVariations(keywordId);
+  const { getH1Variation, getMetaVariations } = keywordModule;
+  
+  const metaResult = getMetaVariations(SITE_NAME, domain, 'eligibility');
+  if (metaResult && metaResult.title) {
+    metaContent = metaResult;
+  }
+  
+  const h1Result = getH1Variation(domain, 'eligibility');
+  if (h1Result && h1Result.h1) {
+    h1Text = h1Result;
+  }
+} catch (e) {
+  console.error('Failed to load keyword variations for eligibility:', e);
+}
+
 const title = metaContent.title;
 const description = metaContent.description;
 const canonical = `${SITE_URL}/eligibility`;
-
-// Dynamic H1 using keyword variations
-const h1Text = getH1Variation(domain, 'eligibility');
 ---
 
 <Layout title={title} description={description} canonical={canonical}>

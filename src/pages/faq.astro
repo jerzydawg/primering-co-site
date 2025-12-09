@@ -17,11 +17,35 @@ const title = metaContent.title;
 const description = metaContent.description;
 const canonical = `${SITE_URL}/faq`;
 
-// Dynamic H1 from keyword variations
-const h1Content = getH1Variation(domain, 'faq');
+// Dynamic H1 from keyword variations with error handling
+let h1Content = { h1: 'Frequently Asked Questions' };
+try {
+  const result = getH1Variation(domain, 'faq');
+  if (result && result.h1) {
+    h1Content = result;
+  }
+} catch (e) {
+  console.error('Failed to load H1 variation for FAQ:', e);
+}
 
-// Get FAQ content from keyword-specific variations
-const faqContent = getFAQVariations(domain);
+// Get FAQ content with error handling
+let faqContent = {
+  sections: {
+    eligibility: { title: 'Eligibility Questions', faqs: [{ question: 'Who qualifies?', answer: 'Qualification information coming soon.' }] },
+    application: { title: 'Application Process', faqs: [{ question: 'How to apply?', answer: 'Application information coming soon.' }] },
+    benefits: { title: 'Service & Benefits', faqs: [{ question: 'What do I get?', answer: 'Benefits information coming soon.' }] },
+    programs: { title: 'Program Details', faqs: [{ question: 'What programs are available?', answer: 'Program information coming soon.' }] },
+    support: { title: 'Technical Support', faqs: [{ question: 'Need help?', answer: 'Support information coming soon.' }] }
+  }
+};
+try {
+  const result = getFAQVariations(domain);
+  if (result && result.sections) {
+    faqContent = result;
+  }
+} catch (e) {
+  console.error('Failed to load FAQ variations:', e);
+}
 ---
 
 <Layout title={title} description={description} canonical={canonical}>

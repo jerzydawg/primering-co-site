@@ -10,17 +10,29 @@ const SITE_NAME = getSiteName();
 const DOMAIN = getDomain();
 const keywordId = getKeywordId();
 
-// Load keyword-specific variations
-const keywordModule = await loadKeywordVariations(keywordId);
-const { getH1Variation, getMetaVariations } = keywordModule;
+// Load keyword-specific variations with error handling
+let metaContent = { title: 'Contact Us', description: 'Get in touch with us' };
+let h1Text = { h1: 'Contact Us' };
 
-// Dynamic SEO Meta Tags using keyword variations
-const metaContent = getMetaVariations(SITE_NAME, DOMAIN, 'contact');
+try {
+  const keywordModule = await loadKeywordVariations(keywordId);
+  const { getH1Variation, getMetaVariations } = keywordModule;
+  
+  const metaResult = getMetaVariations(SITE_NAME, DOMAIN, 'contact');
+  if (metaResult && metaResult.title) {
+    metaContent = metaResult;
+  }
+  
+  const h1Result = getH1Variation(DOMAIN, 'contact');
+  if (h1Result && h1Result.h1) {
+    h1Text = h1Result;
+  }
+} catch (e) {
+  console.error('Failed to load keyword variations for contact:', e);
+}
+
 const title = metaContent.title;
 const description = metaContent.description;
-
-// Dynamic H1 using keyword variations
-const h1Text = getH1Variation(DOMAIN, 'contact');
 
 // Structured data for better SEO
 const structuredData = {
